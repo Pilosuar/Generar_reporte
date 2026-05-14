@@ -71,10 +71,10 @@ def generar_reporte(request):
     students = get_students("863630393187")  # ID del curso
     #################################################################################################
     ## CONTINUAR CON EL CÓDIGO ->     
-    return render(request,"generar_reporte.html", {"cursos": courses, "alumnos": students})
+    return render(request,"generar_reporte.html", {"cursos": courses, "alumnos": alumnos, "materias":materias, "alumnomateria": relaciones})
     
 ### SE COLOCARÁ DENTRO DE GENARAR REPORTE (NO SERÁ UN 'INCLUDE')
-def buscador(request):
+
     if request.method == "GET":
         if request.GET["busqueda"]:
             busqueda = request.GET["busqueda"]

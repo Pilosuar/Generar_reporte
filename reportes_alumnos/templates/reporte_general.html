@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reporte Alumnos</title>
+    <title>Sistema de reporte</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap');
 *{
@@ -285,14 +285,14 @@ img{
     padding: 8px;
     font-size: 12px;
 }
-    </style>  
+    </style>    
 </head>
 
 <body>
 
     <header class="header">
         <div class="header-content">
-            <img src="logo.jpg" alt="Logo">
+            <img src="613077409_18090833528511088_7801312701013768873_n.jpg" alt="Logo">
             <h1>Sistema de reporte</h1>
         </div>
     </header>
@@ -302,7 +302,7 @@ img{
     <div class="buscador">
         <input type="text" placeholder="Buscar alumno">
         <button class="boton-buscar">
-            <img src="lupa_icon.png" alt="">
+            <img src="../static/img/logo.jpg" alt="">
         </button>
     </div>
 
@@ -312,48 +312,83 @@ img{
             <option value="">Seleccionar materia</option>
         </select>
     </div>
-<!-- mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm-->
-    <div class="tabla-individual">
-        <div class="card-individual">
-{% for alumno in alumnos %}
-  <h2>{{ alumno.nombre_completo }}</h2>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Materia nombre</th>
-        <th>Promedio</th>
-        <th>Tareas entregadas</th>
-        <th>Porcentaje de trabajos entregados</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for relacion in alumno.alumnomateria_set.all %}
-        <tr>
-          <td>{{ relacion.materia.nombre }}</td>
-          <td>{{ relacion.calificacion }}</td>
-          <td><!-- aquí puedes calcular entregadas/total --></td>
-          <td><!-- aquí porcentaje --></td>
-        </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+    <div class="tabla-general">
+        <div class="card">
+            <table>
 
-  <div class="actividades">
-    <h3>Actividades no entregadas</h3>
-    <table class="tabla-actividades">
-      <tbody>
-        {% for act in actividades_no_entregadas %}
-        <tr>
-            <td>{{ act.nombre_materias_no_entregadas }}</td>
-            <td>{{ act.materia.nombre }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-{% endfor %}
-            </div>
+                <thead>
+                    <tr>
+                        <th rowspan="2">Nombre alumno</th>
+                        <th colspan="3">Bloque 1</th>
+                        <th colspan="3">Bloque 2</th>
+                        <th colspan="3">Bloque 3</th>
+                        <th colspan="3">Bloque 4</th>
+                        <th rowspan="2">Promedio final</th>
+                    </tr>
+                    <tr>
+                        <th>Actividades entregadas</th>
+                        <th>Porcentaje</th>
+                        <th>Calificación</th>
+
+                        <th>Actividades entregadas</th>
+                        <th>Porcentaje</th>
+                        <th>Calificación</th>
+
+                        <th>Actividades entregadas</th>
+                        <th>Porcentaje</th>
+                        <th>Calificación</th>
+
+                        <th>Actividades entregadas</th>
+                        <th>Porcentaje</th>
+                        <th>Calificación</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        <td>Juan</td>
+                        <td>4/5</td>
+                        <td>90%</td>
+                        <td>9</td>
+
+                        <td>6/6</td>
+                        <td>100%</td>
+                        <td>10</td>
+
+                        <td>5/6</td>
+                        <td>85%</td>
+                        <td>8</td>
+
+                        <td>3/5</td>
+                        <td>60%</td>
+                        <td>7</td>
+
+                        <td>8.5</td>
+                    </tr>
+
+                    <tr>
+                        <td>María</td>
+                        <td>5/5</td>
+                        <td>100%</td>
+                        <td>10</td>
+
+                        <td>4/6</td>
+                        <td>66.67%</td>
+                        <td>7</td>
+
+                        <td>6/6</td>
+                        <td>100%</td>
+                        <td>10</td>
+
+                        <td>5/5</td>
+                        <td>100%</td>
+                        <td>10</td>
+
+                        <td>8.5</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 
@@ -362,7 +397,7 @@ img{
     </div>
 
     <footer class="seccion-verde"></footer>
-    
+
 </body>
 
 </html>

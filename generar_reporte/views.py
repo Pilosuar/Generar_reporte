@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from google_auth_oauthlib.flow import Flow
 from django.conf import settings
 import os
-from .google_classroom import get_courses, get_students
+
 from generar_reporte.models import Alumno, AlumnoMateria, MateriaActividad, Materia
 from .google_classroom import sync_classroom_data, sync_activities
 #http://127.0.0.1:8000/reporte/generar
@@ -53,25 +53,33 @@ def generar_callback(request):
 
 #### VISTA DE 'generar_reporte.html'
 def generar_reporte(request):
-    courses = get_courses()
-    ### SIN PERMISO PARA VER TODAS LAS CLASES ###
-    #for curso in courses:
-    #    course_id = curso["id"]   # obtener el ID del curso
-    #    sync_activities(course_id=course_id)
-    #################################################
-    #ACTIVIDADES DEL CURSO '863630393187'
-    sync_activities(course_id="863630393187")
-    # FUNCION QUE ALMACENA TODOS LOS DATOS EN LA BASE DE DATOS
+    # FUNCIONES QUE ALMACENA TODOS LOS DATOS EN LA BASE DE DATOS
+    # Sincroniza datos primero
     sync_classroom_data()
-    alumnos = Alumno.objects.all()
+    sync_activities(course_id="863630393187")
+    alumno = Alumno.objects.values("nombre_completo").distinct()
+    
+    # Trae todos los alumnos con sus relaciones
+    alumnos = Alumno.objects.prefetch_related("alumnomateria_set__materia")
+    # Trae las actividades también
+    actividades = MateriaActividad.objects.select_related("materia")
+    ### todos los registros
+   
     materias = Materia.objects.all()
     relaciones = AlumnoMateria.objects.all()
+  
+
     # SE SUSTITUIRÁ POR UNA CONSULTA EN BASE DE DATOS
     #OBTIENE LOS ALUMNOS DESDE CLASSROOM
-    students = get_students("863630393187")  # ID del curso
+    #students = get_students("863630393187")  # ID del curso
     #################################################################################################
     ## CONTINUAR CON EL CÓDIGO ->     
-    return render(request,"generar_reporte.html", {"cursos": courses, "alumnos": alumnos, "materias":materias, "alumnomateria": relaciones})
+    return render(request,"generar_reporte.html", {"alumnos_realcion": alumnos,
+                                                   "alumnos":alumno,
+                                                   "materias":materias,
+                                                   "alumnomateria": relaciones, 
+                                                   "tareas":actividades,
+                                                   })
     
 ### SE COLOCARÁ DENTRO DE GENARAR REPORTE (NO SERÁ UN 'INCLUDE')
 

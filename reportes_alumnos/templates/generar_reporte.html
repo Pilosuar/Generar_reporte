@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generar reporte</title>
+</head>
+<body>
+     <h1>Generar reportes</h1>
+    {% include "barra_busqueda.html" %}
+    <table border="1">
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Sección</th>
+            <th>Descripción</th>
+            <th>Sala</th>
+            <th>Estado</th>
+            <th>Link</th>
+        </tr>
+        {% for curso in cursos %}
+        <tr>
+            <td>{{ curso.id }}</td>
+            <td>{{ curso.name }}</td>
+            <td>{{ curso.section }}</td>
+            <td>{{ curso.description }}</td>
+            <td>{{ curso.room }}</td>
+            <td>{{ curso.courseState }}</td>
+            <td><a href="{{ curso.alternateLink }}" target="_blank">Abrir</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <h2>Alumnos de la clase</h2>
+    <ul>
+        {% for alumno in alumnos %}
+        <p>{{ alumno.profile.name.fullName }} - {{ alumno.profile.emailAddress }}</p>
+        {% endfor %}
+    </ul>
+
+    <h1>PRUEBA DE ALMACEN DE DATOS</h1> <!-- ------------------------------------------------------------------------------- -->
+    <h2>Materias</h2>
+    <ul>
+        {% for materia in materias %}
+            <li>{{ materia.nombre }}</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Alumnos</h2>
+    <ul>
+        {% for alumno in alumnos %}
+            <li>{{ alumno.nombre_completo }} - {{ alumno.materia }}</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Relaciones Alumno-Materia</h2>
+    <ul>
+        {% for rel in relaciones %}
+            <li>{{ rel.alumno.nombre_completo }} → {{ rel.materia.nombre }} (Calificación: {{ rel.calificion }})</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

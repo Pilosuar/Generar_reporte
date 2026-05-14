@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barra de busqueda</title>
+</head>
+<body>
+    <div style="width: 100vw; height: 600px; background-color: aqua;""></div>
+    <form action="/reporte/descargar/" method="GET"
+        {% csrf_token %}
+        <input type="text" name="busqueda" maxlength="20">
+        <input type="submit" value="Buscar"> 
+    </form>
+    {% if alumno_buscado %}
+    <p>Buscando: {{ alumno_buscado }}</p>
+    {% endif %}
+    {% if mensaje %}
+    <p>{{ mensaje }}</p>
+    {% endif %}
+</body>
+</html>

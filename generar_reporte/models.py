@@ -2,14 +2,14 @@ from django.db import models
 
 class Alumno(models.Model):
     nombre_completo = models.CharField(max_length=200)
-    google_id = models.CharField(max_length=100, unique=True)  # identificador único
+    google_id = models.CharField(max_length=20,  unique=True, default=0)  # identificador único
 
     def __str__(self):
         return self.nombre_completo
 
 class Materia(models.Model):
     nombre = models.CharField(max_length=200, unique=True)
-
+    google_id = models.CharField(max_length=20,  unique=True, default=0)
     def __str__(self):
         return self.nombre
 

@@ -40,9 +40,13 @@ def sync_classroom_data():
     service = get_service()
     courses = service.courses().list().execute().get("courses", [])
     for course in courses:
+        # Guardamos el nombre y el ID de la clase
         materia_obj, _ = Materia.objects.get_or_create(
-            nombre=course.get("name", "Sin nombre")
+            google_id=course.get("id"),   # ID único de la clase en Classroom
+            defaults={"nombre": course.get("name", "Sin nombre")}
         )
+
+        # Traer estudiantes de la clase
         students = service.courses().students().list(courseId=course["id"]).execute().get("students", [])
         for student in students:
             profile = student.get("profile", {})

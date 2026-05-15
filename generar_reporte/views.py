@@ -5,8 +5,8 @@ from django.conf import settings
 import os
 from django.db.models import Count, Avg, F
 
-from generar_reporte.models import Alumno, AlumnoMateria, MateriaActividad, Materia
-from .google_classroom import sync_classroom_data, sync_activities
+from generar_reporte.models import Alumno, Actividad
+from .google_classroom import sync_classroom_data
 #http://127.0.0.1:8000/reporte/generar
 SCOPES = [
     "https://www.googleapis.com/auth/classroom.courses.readonly",
@@ -54,32 +54,40 @@ def generar_callback(request):
 
 #### VISTA DE 'generar_reporte.html'
 def generar_reporte(request):
-    # FUNCIONES QUE ALMACENA TODOS LOS DATOS EN LA BASE DE DATOS
     # Sincroniza datos primero
     sync_classroom_data()
-    sync_activities(course_id="863630393187")
     
     # Trae todos los alumnos con sus relaciones
     alumnos = Alumno.objects.prefetch_related(
         "alumnomateria_set__materia",
-        "alumnomateria_set__materia__materiaactividad_set"
+        "alumnomateria_set__materia__actividad_set"
     )
 
     datos = []
     for alumno in alumnos:
         materias_info = []
         for relacion in alumno.alumnomateria_set.all():
-            total = relacion.materia.materiaactividad_set.count()
-            entregadas = relacion.materia.materiaactividad_set.filter(actividad_entregada=True).count()
+            # 🔹 Filtrar actividades por alumno y materia
+            actividades = Actividad.objects.filter(
+                alumno=alumno,
+                materia=relacion.materia
+            )
+
+            total = actividades.count()
+            entregadas = actividades.filter(actividad_entregada=True).count()
             porcentaje = (entregadas / total * 100) if total > 0 else 0
+
+            # Calcular promedio de calificaciones
+            promedio = actividades.aggregate(promedio=Avg("calificacion"))["promedio"] or 0
 
             materias_info.append({
                 "materia": relacion.materia.nombre,
-                "calificacion": relacion.calificacion,
+                "promedio": round(promedio, 2),
                 "entregadas": entregadas,
                 "total": total,
                 "porcentaje": porcentaje,
-                "actividades_no_entregadas": relacion.materia.materiaactividad_set.filter(actividad_entregada=False)
+                "actividades_no_entregadas": actividades.filter(actividad_entregada=False),
+                "calificaciones": actividades.values_list("calificacion", flat=True)
             })
 
         datos.append({
@@ -87,15 +95,9 @@ def generar_reporte(request):
             "materias": materias_info
         })
   
-
-    # SE SUSTITUIRÁ POR UNA CONSULTA EN BASE DE DATOS
-    #OBTIENE LOS ALUMNOS DESDE CLASSROOM
-    #students = get_students("863630393187")  # ID del curso
-    #################################################################################################
-    ## CONTINUAR CON EL CÓDIGO ->     
-    return render(request,"generar_reporte.html", {"alumnos_realcion": alumnos,
-                                                   "datos":datos})
-    
+    return render(request,"generar_reporte.html",
+                  {"alumnos_realcion": alumnos,
+                   "datos": datos})
 ### SE COLOCARÁ DENTRO DE GENARAR REPORTE (NO SERÁ UN 'INCLUDE')
 
     if request.method == "GET":

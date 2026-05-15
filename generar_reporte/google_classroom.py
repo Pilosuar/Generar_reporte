@@ -4,7 +4,7 @@ from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import Flow
 from django.conf import settings
-from generar_reporte.models import Alumno, AlumnoMateria, MateriaActividad, Materia
+from generar_reporte.models import Alumno, AlumnoMateria, Actividad, Materia
 
 SCOPES = [
     "https://www.googleapis.com/auth/classroom.courses.readonly",
@@ -58,26 +58,35 @@ def sync_classroom_data():
                 defaults={"nombre_completo": nombre}
             )
 
-            AlumnoMateria.objects.get_or_create(
+            # Relación alumno-materia
+            relacion, _ = AlumnoMateria.objects.get_or_create(
                 alumno=alumno_obj,
-                materia=materia_obj,
-                defaults={"calificacion": 0}
+                materia=materia_obj
             )
 
-### verifica si está entregada o no
-def sync_activities(course_id):
-    service = get_service()
-    coursework = service.courses().courseWork().list(courseId=course_id).execute().get("courseWork", [])
-    course = service.courses().get(id=course_id).execute()
+            # 🔹 Recorrer las tareas del curso
+            coursework = service.courses().courseWork().list(courseId=course["id"]).execute().get("courseWork", [])
+            for work in coursework:
+                # Obtener entregas de cada tarea
+                submissions = service.courses().courseWork().studentSubmissions().list(
+                    courseId=course["id"],
+                    courseWorkId=work["id"]
+                ).execute().get("studentSubmissions", [])
 
-    materia_obj, _ = Materia.objects.get_or_create(
-        nombre=course.get("name", "Sin nombre")
-    )
+                entregada = False
+                grade = 0
+                for sub in submissions:
+                    if sub.get("userId") == google_id:
+                        grade = sub.get("assignedGrade", 0)
+                        entregada = sub.get("state") == "TURNED_IN"
 
-    for work in coursework:
-        entregada = work.get("state") == "TURNED_IN"
-        MateriaActividad.objects.get_or_create(
-            materia=materia_obj,
-            nombre_materias_no_entregadas=work.get("title", "Sin título"),
-            defaults={"actividad_entregada": entregada}
-        )
+                # Guardar actividad en Actividad (ligada a alumno y materia)
+                Actividad.objects.get_or_create(
+                    alumno=alumno_obj,
+                    materia=materia_obj,
+                    nombre_materias_no_entregadas=work.get("title", "Sin título"),
+                    defaults={
+                        "actividad_entregada": entregada,
+                        "calificacion": grade
+                    }
+                )

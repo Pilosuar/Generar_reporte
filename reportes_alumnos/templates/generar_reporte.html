@@ -173,49 +173,53 @@ body {
 
     <div class="container">
         {% for registro in datos %}
-  <h2>{{ registro.alumno }}</h2>
+            <h2>{{ registro.alumno }}</h2>
 
-  <div class="tabla-individual">
-    <div class="card-individual">
-      <table>
-        <thead>
-          <tr>
-            <th>Materia nombre</th>
-            <th>Promedio</th>
-            <th>Tareas entregadas</th>
-            <th>Porcentaje de trabajos entregados</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for materia in registro.materias %}
-            <tr>
-              <td>{{ materia.materia }}</td>
-              <td>{{ materia.calificacion }}</td>
-              <td>{{ materia.entregadas }}/{{ materia.total }}</td>
-              <td>{{ materia.porcentaje }}%</td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </div>
+            <div class="tabla-individual">
+                <div class="card-individual">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Materia nombre</th>
+                                <th>Promedio</th>
+                                <th>Tareas entregadas</th>
+                                <th>Porcentaje de trabajos entregados</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for materia in registro.materias %}
+                                <tr>
+                                    <td>{{ materia.materia }}</td>
+                                    <td>
+                                        {# Mostrar promedio calculado en la vista #}
+                                        {{ materia.promedio }}
+                                    </td>
+                                    <td>{{ materia.entregadas }}/{{ materia.total }}</td>
+                                    <td>{{ materia.porcentaje }}%</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
-  <div class="actividades">
-    <h3>Actividades no entregadas</h3>
-    <table class="tabla-actividades">
-      <tbody>
-        {% for materia in registro.materias %}
-          {% for act in materia.actividades_no_entregadas %}
-            <tr>
-              <td>{{ act.nombre_materias_no_entregadas }}</td>
-              <td>{{ materia.materia }}</td>
-            </tr>
-          {% endfor %}
+            <div class="actividades">
+                <h3>Actividades no entregadas</h3>
+                <table class="tabla-actividades">
+                    <tbody>
+                        {% for materia in registro.materias %}
+                            {% for act in materia.actividades_no_entregadas %}
+                                <tr>
+                                    <td>{{ act.nombre_materias_no_entregadas }}</td>
+                                    <td>{{ materia.materia }}</td>
+                                    <td>Calificación: {{ act.calificacion }}</td>
+                                </tr>
+                            {% endfor %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         {% endfor %}
-      </tbody>
-    </table>
-  </div>
-{% endfor %}
     </div>
 
     <footer class="seccion-verde">

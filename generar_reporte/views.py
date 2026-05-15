@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from google_auth_oauthlib.flow import Flow
 from django.conf import settings
 import os
+from django.db.models import Count, Avg, F
 
 from generar_reporte.models import Alumno, AlumnoMateria, MateriaActividad, Materia
 from .google_classroom import sync_classroom_data, sync_activities
@@ -57,16 +58,34 @@ def generar_reporte(request):
     # Sincroniza datos primero
     sync_classroom_data()
     sync_activities(course_id="863630393187")
-    alumno = Alumno.objects.values("nombre_completo").distinct()
     
     # Trae todos los alumnos con sus relaciones
-    alumnos = Alumno.objects.prefetch_related("alumnomateria_set__materia")
-    # Trae las actividades también
-    actividades = MateriaActividad.objects.select_related("materia")
-    ### todos los registros
-   
-    materias = Materia.objects.all()
-    relaciones = AlumnoMateria.objects.all()
+    alumnos = Alumno.objects.prefetch_related(
+        "alumnomateria_set__materia",
+        "alumnomateria_set__materia__materiaactividad_set"
+    )
+
+    datos = []
+    for alumno in alumnos:
+        materias_info = []
+        for relacion in alumno.alumnomateria_set.all():
+            total = relacion.materia.materiaactividad_set.count()
+            entregadas = relacion.materia.materiaactividad_set.filter(actividad_entregada=True).count()
+            porcentaje = (entregadas / total * 100) if total > 0 else 0
+
+            materias_info.append({
+                "materia": relacion.materia.nombre,
+                "calificacion": relacion.calificacion,
+                "entregadas": entregadas,
+                "total": total,
+                "porcentaje": porcentaje,
+                "actividades_no_entregadas": relacion.materia.materiaactividad_set.filter(actividad_entregada=False)
+            })
+
+        datos.append({
+            "alumno": alumno.nombre_completo,
+            "materias": materias_info
+        })
   
 
     # SE SUSTITUIRÁ POR UNA CONSULTA EN BASE DE DATOS
@@ -75,11 +94,7 @@ def generar_reporte(request):
     #################################################################################################
     ## CONTINUAR CON EL CÓDIGO ->     
     return render(request,"generar_reporte.html", {"alumnos_realcion": alumnos,
-                                                   "alumnos":alumno,
-                                                   "materias":materias,
-                                                   "alumnomateria": relaciones, 
-                                                   "tareas":actividades,
-                                                   })
+                                                   "datos":datos})
     
 ### SE COLOCARÁ DENTRO DE GENARAR REPORTE (NO SERÁ UN 'INCLUDE')
 

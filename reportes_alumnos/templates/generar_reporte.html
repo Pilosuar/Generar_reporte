@@ -1,9 +1,10 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Sistema de reporte</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Sistema de reportes</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap');
 
@@ -157,7 +158,6 @@ body {
     padding: 20px 0;
     margin-top: auto;
 }
-
     </style>
 </head>
 <body>
@@ -165,15 +165,36 @@ body {
     <header class="header">
         <div class="header-content">
             <img src="logo.png" alt="Logo">
-            <h1>Sistema de reporte</h1>
+            <h1>Sistema de reportes</h1>
         </div>
     </header>
 
     <div class="separador-amarrillo"></div>
 
     <div class="container">
+
+        <!-- 🔹 Barra de búsqueda y filtro -->
+        <div class="busqueda-filtro" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <div>
+                <label for="buscar">Buscar alumno:</label>
+                <input type="text" id="buscar" name="buscar" placeholder="Nombre del alumno" style="padding:6px; border-radius:4px; border:1px solid #ccc;">
+            </div>
+            <div>
+                <label for="materia">Materia:</label>
+                <select id="materia" name="materia" style="padding:6px; border-radius:4px; border:1px solid #ccc;">
+                    <option>Nombre de materia</option>
+                    {% for registro in datos %}
+                        {% for materia in registro.materias %}
+                            <option>{{ materia.materia }}</option>
+                        {% endfor %}
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <!-- 🔹 Reporte por alumno -->
         {% for registro in datos %}
-            <h2>{{ registro.alumno }}</h2>
+            <h2 style="margin-bottom:10px;">{{ registro.alumno }}</h2>
 
             <div class="tabla-individual">
                 <div class="card-individual">
@@ -190,10 +211,7 @@ body {
                             {% for materia in registro.materias %}
                                 <tr>
                                     <td>{{ materia.materia }}</td>
-                                    <td>
-                                        {# Mostrar promedio calculado en la vista #}
-                                        {{ materia.promedio }}
-                                    </td>
+                                    <td>{{ materia.promedio }}</td>
                                     <td>{{ materia.entregadas }}/{{ materia.total }}</td>
                                     <td>{{ materia.porcentaje }}%</td>
                                 </tr>
@@ -203,23 +221,40 @@ body {
                 </div>
             </div>
 
+            <!-- 🔹 Actividades no entregadas -->
             <div class="actividades">
+                {% if registro.materias %}
                 <h3>Actividades no entregadas</h3>
                 <table class="tabla-actividades">
+                    <thead>
+                        <tr>
+                            <th>Nombre de actividad</th>
+                            <th>Materia</th>
+                            <th>Calificación</th>
+                        </tr>
+                    </thead>
                     <tbody>
                         {% for materia in registro.materias %}
                             {% for act in materia.actividades_no_entregadas %}
                                 <tr>
                                     <td>{{ act.nombre_materias_no_entregadas }}</td>
                                     <td>{{ materia.materia }}</td>
-                                    <td>Calificación: {{ act.calificacion }}</td>
+                                    <td>{{ act.calificacion }}</td>
                                 </tr>
                             {% endfor %}
                         {% endfor %}
                     </tbody>
                 </table>
+                {% else %}
+                <p>TAODAS LAS ACTIVIDADES FUERON ENTREGADAS</p>
+                {% endif %}
             </div>
         {% endfor %}
+
+        <!-- 🔹 Botón generar reporte -->
+        <div class="btn-contenedor">
+            <button class="btn-generar">Generar reporte</button>
+        </div>
     </div>
 
     <footer class="seccion-verde">

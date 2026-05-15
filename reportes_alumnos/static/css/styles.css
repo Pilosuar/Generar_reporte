@@ -1,13 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap');
-*{
+
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    text-decoration: none;
-    list-style: none;
 }
 
-body{
+body {
     font-family: 'Montserrat', sans-serif;
     background-color: #D9D9D9;
     min-height: 100vh;
@@ -15,15 +14,12 @@ body{
     flex-direction: column;
 }
 
-img{
-    max-width: 100%;
-}
-
 .container {
     max-width: 1200px;
-    margin: 0 auto;
+    margin: 20px auto;
 }
 
+/* Header */
 .header {
     display: flex;
     align-items: center;
@@ -45,90 +41,21 @@ img{
 
 .header-content h1 {
     color: #FFFFFF;
-    font-family: 'Montserrat', sans-serif;
-    font-size: 40px;
+    font-size: 32px;
     font-weight: 700;
     flex: 1;
     text-align: center;
-    margin-right: 90px;
 }
 
+/* Separador amarillo */
 .separador-amarrillo {
     width: 100%;
     height: 39px;
     background-color: #F9D007;
 }
 
-.buscador {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 700px;
-    margin: 30px auto 20px auto;
-}
-
-.buscador input {
-    width: 100%;
-    padding: 10px;
-    height: 40px;
-    border: none;
-    border-radius: 5px 0 0 5px;
-    font-size: 16px;
-}
-
-.buscador input::placeholder {
-    color: #999999;
-}
-
-.buscador .boton-buscar {
-    width: 50px;
-    height: 40px;
-    border: none;
-    background-color: #FFFFFF;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 0 5px 5px 0;
-}
-
-.buscador .boton-buscar img {
-    width: 20px;
-    height: 20px;
-}
-
-.filtro{
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    margin: 25px 0;
-}
-
-.filtro label{
-    font-size: 15px;
-    font-weight: 600;
-    padding: 0 30px;
-}
-
-.filtro select{
-    width: 230px;
-    height: 42px;
-    border: none;
-    border-radius: 5px;
-    padding: 0 15px;
-    background-color: #FFFFFF;
-    font-size: 14px;
-    color: #555555;
-    outline: none;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.12);
-    transition: 0.3s;
-}
-
-.filtro select:focus{
-    box-shadow: 0 0 0 3px rgba(0, 75, 185, 0.25);
-}
-
-.tabla-general .card {
+/* Tarjeta de tabla individual */
+.tabla-individual .card-individual {
     margin: 20px auto;
     width: 95%;
     padding: 20px;
@@ -137,14 +64,14 @@ img{
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
-.tabla-general table{
+.tabla-individual table {
     width: 100%;
     border-collapse: collapse;
     text-align: center;
     font-size: 13px;
 }
 
-.tabla-general thead tr:first-child th{
+.tabla-individual thead th {
     background-color: #004BB9;
     color: #FFFFFF;
     padding: 14px 8px;
@@ -153,43 +80,48 @@ img{
     border: 1px solid #dcdcdc;
 }
 
-.tabla-general thead tr:nth-child(2) th{
-    background-color: #EAF1FF;
-    color: #333333;
-    padding: 10px 6px;
-    font-size: 12px;
-    font-weight: 600;
-    border: 1px solid #dcdcdc;
-}
-
-.tabla-general tbody td{
+.tabla-individual tbody td {
     padding: 12px 8px;
     border: 1px solid #e0e0e0;
     color: #444444;
-    font-size: 13px;
+    font-size: 12px;
 }
 
-.tabla-general tbody tr:hover{
+.tabla-individual tbody tr:hover {
     background-color: #f5f9ff;
     transition: 0.2s;
 }
 
-.tabla-general tbody td:first-child{
+/* Actividades */
+.actividades {
+    margin-top: 18px;
+}
+
+.actividades h3 {
+    margin-bottom: 10px;
+    color: #333333;
+    font-size: 14px;
     font-weight: 600;
-    color: #004BB9;
 }
 
-.tabla-general thead tr:first-child th:first-child{
-    border-top-left-radius: 5px;
+.tabla-actividades {
+    width: 50%;
+    border-collapse: collapse;
+    background-color: #FFFFFF;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
-.tabla-general thead tr:first-child th:last-child{
-    border-top-right-radius: 5px;
+.tabla-actividades td {
+    padding: 8px;
+    font-size: 12px;
+    border: 1px solid #e0e0e0;
 }
 
+/* Botón */
 .btn-contenedor {
     display: flex;
-    justify-content: right;
+    justify-content: flex-end;
     margin: 30px 0;
     padding: 0 30px;
 }
@@ -210,70 +142,11 @@ img{
     background-color: #2E6B1F;
 }
 
+/* Footer */
 .seccion-verde {
     background-color: #43992D;
     color: #FFFFFF;
     text-align: center;
     padding: 20px 0;
     margin-top: auto;
-}
-
-/*index.html*/
-
-.tabla-individual .card-individual{
-    margin: 20px auto;
-    width: 95%;
-    padding: 20px;
-    background-color: #FFFFFF;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-}
-
-.tabla-individual table{
-    width: 100%;
-    border-collapse: collapse;
-    text-align: center;
-    font-size: 13px;
-}
-
-.tabla-individual thead th{
-    background-color: #004BB9;
-    color: #FFFFFF;
-    padding: 14px 8px;
-    font-size: 14px;
-    font-weight: 600;
-    border: 1px solid #dcdcdc;
-}
-
-.tabla-individual tbody td{
-    padding: 12px 8px;
-    border: 1px solid #e0e0e0;
-    color: #444444;
-    font-size: 12px;
-}
-
-.tabla-individual tbody tr:hover{
-    background-color: #f5f9ff;
-    transition: 0.2s;
-}
-
-.actividades{
-    margin-top: 18px;
-    justify-content: left;
-}
-
-.actividades h3{
-    margin-bottom: 10px;
-    color: #333333;
-    font-size: 14px;
-    font-weight: 600;
-}
-
-.tabla-actividades{
-    width: 35%;
-}
-
-.tabla-actividades td{
-    padding: 8px;
-    font-size: 12px;
 }

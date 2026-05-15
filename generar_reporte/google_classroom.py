@@ -41,7 +41,7 @@ def sync_classroom_data():
     courses = service.courses().list().execute().get("courses", [])
     for course in courses:
         # Guardamos el nombre y el ID de la clase
-        materia_obj, _ = Materia.objects.get_or_create(
+        materia_obj, _ = Materia.objects.update_or_create(
             google_id=course.get("id"),   # ID único de la clase en Classroom
             defaults={"nombre": course.get("name", "Sin nombre")}
         )
@@ -53,13 +53,13 @@ def sync_classroom_data():
             nombre = profile.get("name", {}).get("fullName", "Sin nombre")
             google_id = profile.get("id", None)
 
-            alumno_obj, _ = Alumno.objects.get_or_create(
+            alumno_obj, _ = Alumno.objects.update_or_create(
                 google_id=google_id,
                 defaults={"nombre_completo": nombre}
             )
 
             # Relación alumno-materia
-            relacion, _ = AlumnoMateria.objects.get_or_create(
+            relacion, _ = AlumnoMateria.objects.update_or_create(
                 alumno=alumno_obj,
                 materia=materia_obj
             )
@@ -78,10 +78,11 @@ def sync_classroom_data():
                 for sub in submissions:
                     if sub.get("userId") == google_id:
                         grade = sub.get("assignedGrade", 0)
-                        entregada = sub.get("state") == "TURNED_IN"
+                        # 🔹 Considerar entregada si está TURNED_IN o RETURNED
+                        entregada = sub.get("state") in ["RETURNED"]
 
-                # Guardar actividad en Actividad (ligada a alumno y materia)
-                Actividad.objects.get_or_create(
+                # Guardar/actualizar actividad en Actividad (ligada a alumno y materia)
+                Actividad.objects.update_or_create(
                     alumno=alumno_obj,
                     materia=materia_obj,
                     nombre_materias_no_entregadas=work.get("title", "Sin título"),
@@ -90,3 +91,4 @@ def sync_classroom_data():
                         "calificacion": grade
                     }
                 )
+

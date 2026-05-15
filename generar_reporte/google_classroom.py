@@ -64,7 +64,7 @@ def sync_classroom_data():
                 materia=materia_obj
             )
 
-            # 🔹 Recorrer las tareas del curso
+            # Recorrer las tareas del curso
             coursework = service.courses().courseWork().list(courseId=course["id"]).execute().get("courseWork", [])
             for work in coursework:
                 # Obtener entregas de cada tarea
@@ -78,7 +78,7 @@ def sync_classroom_data():
                 for sub in submissions:
                     if sub.get("userId") == google_id:
                         grade = sub.get("assignedGrade", 0)
-                        # 🔹 Considerar entregada si está TURNED_IN o RETURNED
+                        # Considerar entregada si está TURNED_IN o RETURNED
                         entregada = sub.get("state") in ["RETURNED"]
 
                 # Guardar/actualizar actividad en Actividad (ligada a alumno y materia)

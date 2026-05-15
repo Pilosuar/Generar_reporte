@@ -57,6 +57,8 @@ def generar_reporte(request):
     # Sincroniza datos primero
     sync_classroom_data()
     
+    
+    
     # Trae todos los alumnos con sus relaciones
     alumnos = Alumno.objects.prefetch_related(
         "alumnomateria_set__materia",
@@ -67,7 +69,7 @@ def generar_reporte(request):
     for alumno in alumnos:
         materias_info = []
         for relacion in alumno.alumnomateria_set.all():
-            # 🔹 Filtrar actividades por alumno y materia
+            # Filtrar actividades por alumno y materia
             actividades = Actividad.objects.filter(
                 alumno=alumno,
                 materia=relacion.materia
@@ -94,23 +96,56 @@ def generar_reporte(request):
             "alumno": alumno.nombre_completo,
             "materias": materias_info
         })
-  
     return render(request,"generar_reporte.html",
                   {"alumnos_realcion": alumnos,
                    "datos": datos})
-### SE COLOCARÁ DENTRO DE GENARAR REPORTE (NO SERÁ UN 'INCLUDE')
+    
+### barra de busqueda abre otro html
+def alumno_buscado(request):
+    # Capturar parámetro de búsqueda
+    buscar = request.GET.get("buscar", "")
 
-    if request.method == "GET":
-        if request.GET["busqueda"]:
-            busqueda = request.GET["busqueda"]
-            if len(busqueda)>20:
-            #mensaje = "Articulo buscado: %r" %request.GET["producto"]
-                mensaje = "Busqueda demasiado larga"
-            else:
-                busqueda= request.GET["busqueda"]
-                alumnos_buscados = Alumno.objects.filter(nombre__icontains = busqueda)
-                mensaje = []
-    #################################################################################################
-    ## CONTINUAR CON EL CÓDIGO ->
-            return render(request,"generar_reporte.html", {"alumnos": alumnos_buscados, "mensaje":mensaje, "alumno_buscado":busqueda})
-    return render(request, "barra_busqueda.html")
+    # Si no hay búsqueda, redirigir o mostrar mensaje
+    if not buscar:
+        return render(request, "busqueda.html", {"datos": [], "buscar": ""})
+
+    # Filtrar alumnos por nombre
+    alumnos = Alumno.objects.filter(nombre_completo__icontains=buscar).prefetch_related(
+        "alumnomateria_set__materia",
+        "alumnomateria_set__materia__actividad_set"
+    )
+
+    datos = []
+    for alumno in alumnos:
+        materias_info = []
+        for relacion in alumno.alumnomateria_set.all():
+            actividades = Actividad.objects.filter(
+                alumno=alumno,
+                materia=relacion.materia
+            )
+            total = actividades.count()
+            entregadas = actividades.filter(actividad_entregada=True).count()
+            porcentaje = (entregadas / total * 100) if total > 0 else 0
+            promedio = actividades.aggregate(promedio=Avg("calificacion"))["promedio"] or 0
+
+            materias_info.append({
+                "materia": relacion.materia.nombre,
+                "promedio": round(promedio, 2),
+                "entregadas": entregadas,
+                "total": total,
+                "porcentaje": porcentaje,
+                "actividades_no_entregadas": actividades.filter(actividad_entregada=False),
+            })
+
+        datos.append({
+            "alumno": alumno.nombre_completo,
+            "materias": materias_info
+        })
+
+    # Renderizar otro HTML (ej: busqueda.html) con los resultados
+    return render(request, "buscar_alumno.html", {
+        "datos": datos,
+        "buscar": buscar
+    })
+
+    

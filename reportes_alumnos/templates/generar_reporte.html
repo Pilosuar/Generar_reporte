@@ -173,12 +173,17 @@ body {
 
     <div class="container">
 
-        <!-- 🔹 Barra de búsqueda y filtro -->
+        <!-- Barra de búsqueda y filtro -->
         <div class="busqueda-filtro" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
             <div>
-                <label for="buscar">Buscar alumno:</label>
-                <input type="text" id="buscar" name="buscar" placeholder="Nombre del alumno" style="padding:6px; border-radius:4px; border:1px solid #ccc;">
+                <label for="">Buscar alumno:</label>
+                <form action="{% url 'busqueda_alumno' %}" method="GET">
+                    <input type="text" id="buscar" name="buscar" placeholder="Nombre del alumno" value="{{ buscar }}">
+                    <input type="submit" value="Buscar">
+                </form>
             </div>
+
+
             <div>
                 <label for="materia">Materia:</label>
                 <select id="materia" name="materia" style="padding:6px; border-radius:4px; border:1px solid #ccc;">
@@ -190,9 +195,12 @@ body {
                     {% endfor %}
                 </select>
             </div>
+            
+
+
         </div>
 
-        <!-- 🔹 Reporte por alumno -->
+        <!--Reporte por alumno -->
         {% for registro in datos %}
             <h2 style="margin-bottom:10px;">{{ registro.alumno }}</h2>
 
@@ -221,7 +229,7 @@ body {
                 </div>
             </div>
 
-            <!-- 🔹 Actividades no entregadas -->
+            <!-- Actividades no entregadas -->
             <div class="actividades">
                 {% if registro.materias %}
                 <h3>Actividades no entregadas</h3>
@@ -251,7 +259,7 @@ body {
             </div>
         {% endfor %}
 
-        <!-- 🔹 Botón generar reporte -->
+        <!-- Botón generar reporte -->
         <div class="btn-contenedor">
             <button class="btn-generar">Generar reporte</button>
         </div>

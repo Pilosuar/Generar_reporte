@@ -23,4 +23,5 @@ urlpatterns = [
     path("reporte/login", views.login_google, name="login_google"),
     path("reporte/generar", views.generar_callback, name="generar_callback"),
     path("reporte/descargar/", views.generar_reporte),
+    path("reporte/busqueda_alumno", views.alumno_buscado, name='busqueda_alumno')
 ]

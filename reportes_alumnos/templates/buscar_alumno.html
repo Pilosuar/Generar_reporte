@@ -1,11 +1,66 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alumno buscado</title>
 </head>
 <body>
-    
+    <h1>Resultados para "{{ buscar }}"</h1>
+
+    {% if datos %}
+        {% for registro in datos %}
+            <h2>{{ registro.alumno }}</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Materia</th>
+                        <th>Promedio</th>
+                        <th>Tareas entregadas</th>
+                        <th>Porcentaje</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for materia in registro.materias %}
+                        <tr>
+                            <td>{{ materia.materia }}</td>
+                            <td>{{ materia.promedio }}</td>
+                            <td>{{ materia.entregadas }}/{{ materia.total }}</td>
+                            <td>{{ materia.porcentaje }}%</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div class="actividades">
+                {% if registro.materias %}
+                <h3>Actividades no entregadas</h3>
+                <table class="tabla-actividades">
+                    <thead>
+                        <tr>
+                            <th>Nombre de actividad</th>
+                            <th>Materia</th>
+                            <th>Calificación</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for materia in registro.materias %}
+                            {% for act in materia.actividades_no_entregadas %}
+                                <tr>
+                                    <td>{{ act.nombre_materias_no_entregadas }}</td>
+                                    <td>{{ materia.materia }}</td>
+                                    <td>{{ act.calificacion }}</td>
+                                </tr>
+                            {% endfor %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p>TAODAS LAS ACTIVIDADES FUERON ENTREGADAS</p>
+                {% endif %}
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No se encontraron coincidencias.</p>
+    {% endif %}
 </body>
 </html>

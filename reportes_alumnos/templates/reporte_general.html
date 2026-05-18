@@ -170,21 +170,23 @@ body {
         </div>
     </header>
 
+    <div class="separador-amarrillo"></div>
+    
     <!-- Selector de materia -->
     <div style="padding:20px;">
-        <label for="materia">Materia:</label>
-        <select id="materia" name="materia" style="padding:6px; border-radius:4px; border:1px solid #ccc;">
-            <option value="">Seleccione una materia</option>
-            {% for materia in materias_unicas %}
-                <option value="{{ materia }}">{{ materia }}</option>
-            {% endfor %}
-        </select>
+        <form action="{% url 'busqueda_materia' %}" method="get">
+            <label for="materia">Materia:</label>
+            <select id="materia" name="materia" required style="padding:6px; border-radius:4px; border:1px solid #ccc;">
+                <option value="" disabled selected >Seleccione una materia</option>
+                {% for materia in materias_unicas %}
+                <option value="{{ materia }}" name="materia">{{ materia }}</option>
+                {% endfor %}
+            </select>
+            <input type="submit" value="Buscar">
+        </form>
     </div>
 
     <a href="{% url 'reporte_alumno' %}" style="margin-left:20px;">VER POR ALUMNOS</a>
-
-    <!-- Separador amarillo -->
-    <div class="separador-amarrillo"></div>
 
     <!-- Contenedor principal -->
     <div class="container">

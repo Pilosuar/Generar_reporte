@@ -209,6 +209,43 @@ def reporte_general(request):
     })
     
     
-  
+def materia_buscada(request):
+    materia_nombre = request.GET.get("materia")
+    datos = []
 
+    if materia_nombre:
+        materia = Materia.objects.prefetch_related(
+            "alumnomateria_set__alumno",
+            "actividad_set"
+        ).filter(nombre=materia_nombre).first()
+
+        if materia:
+            alumnos_info = []
+            for relacion in materia.alumnomateria_set.all():
+                alumno = relacion.alumno
+
+                actividades = Actividad.objects.filter(
+                    alumno=alumno,
+                    materia=materia
+                )
+
+                promedio = actividades.aggregate(promedio=Avg("calificacion"))["promedio"] or 0
+
+                alumnos_info.append({
+                    "alumno": alumno.nombre_completo,
+                    "calificaciones": list(actividades.values_list("calificacion", flat=True)),
+                    "nombres_actividades": list(actividades.values_list("nombre_materias_no_entregadas", flat=True)),
+                    "promedio": round(promedio, 2),
+                })
+
+            datos.append({
+                "materia": materia.nombre,
+                "alumnos": alumnos_info
+            })
+
+    # Siempre se devuelve el mismo template, con datos llenos o vacíos
+    return render(request, "buscar_materia.html", {
+        "buscar": materia_nombre,
+        "datos": datos
+    })
 

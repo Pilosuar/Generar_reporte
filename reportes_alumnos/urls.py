@@ -26,4 +26,5 @@ urlpatterns = [
     path("reporte/descargar/", views.generar_reporte, name="reporte_alumno"),
     path("reporte/busqueda_alumno/", views.alumno_buscado, name='busqueda_alumno'),
     path("reporte/general/", views.reporte_general, name='reporte_general'),
+    path("reprte/busqueda_materia/", views.materia_buscada, name='busqueda_materia'),
 ]

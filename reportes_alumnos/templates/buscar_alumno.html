@@ -2,11 +2,15 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Alumno buscado</title>
+    <title>Sistema de reportes</title>
 </head>
 <body>
     <h1>Resultados para "{{ buscar }}"</h1>
-
+    <div>
+        <form action="{% url 'reporte_alumno' %}" method="get">
+            <input type="submit" value="Regresar">
+        </form>
+    </div>
     {% if datos %}
         {% for registro in datos %}
             <h2>{{ registro.alumno }}</h2>
@@ -57,6 +61,9 @@
                 {% else %}
                 <p>TAODAS LAS ACTIVIDADES FUERON ENTREGADAS</p>
                 {% endif %}
+            </div>
+            <div class="btn-contenedor">
+                <button class="btn-generar">Generar reporte</button>
             </div>
         {% endfor %}
     {% else %}

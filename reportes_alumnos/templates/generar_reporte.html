@@ -161,6 +161,10 @@ body {
     </style>
 </head>
 <body>
+    {% if mensaje_error %}
+    <p>Ops... Ocurrio un error, estamos tratando de solucionarlo</p>
+    <p style="color:red;">{{ mensaje_error }}</p>
+    {% else %}
 
     <header class="header">
         <div class="header-content">
@@ -178,25 +182,16 @@ body {
             <div>
                 <label for="">Buscar alumno:</label>
                 <form action="{% url 'busqueda_alumno' %}" method="GET">
-                    <input type="text" id="buscar" name="buscar" placeholder="Nombre del alumno" value="{{ buscar }}">
+                    <input type="text" id="buscar" name="buscar" placeholder="Nombre del alumno" value="{{ buscar }}" required>
                     <input type="submit" value="Buscar">
                 </form>
             </div>
-
-
             <div>
-                <label for="materia">Materia:</label>
-                <select id="materia" name="materia" style="padding:6px; border-radius:4px; border:1px solid #ccc;">
-                    <option>Nombre de materia</option>
-                    {% for registro in datos %}
-                        {% for materia in registro.materias %}
-                            <option>{{ materia.materia }}</option>
-                        {% endfor %}
-                    {% endfor %}
-                </select>
+                <a href="{% url 'reporte_general' %}">VER POR MATERIAS</a>
             </div>
-            
 
+
+            
 
         </div>
 
@@ -257,16 +252,18 @@ body {
                 <p>TAODAS LAS ACTIVIDADES FUERON ENTREGADAS</p>
                 {% endif %}
             </div>
-        {% endfor %}
-
-        <!-- Botón generar reporte -->
         <div class="btn-contenedor">
             <button class="btn-generar">Generar reporte</button>
         </div>
+        {% endfor %}
+
+        <!-- Botón generar reporte -->
+        
     </div>
 
     <footer class="seccion-verde">
     </footer>
 
+    {% endif %}
 </body>
 </html>

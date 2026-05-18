@@ -4,8 +4,10 @@ from google_auth_oauthlib.flow import Flow
 from django.conf import settings
 import os
 from django.db.models import Count, Avg, F
+from googleapiclient.errors import HttpError
+import time
 
-from generar_reporte.models import Alumno, Actividad
+from generar_reporte.models import Alumno, Actividad, Materia
 from .google_classroom import sync_classroom_data
 #http://127.0.0.1:8000/reporte/generar
 SCOPES = [
@@ -31,7 +33,7 @@ def login_google(request):
     request.session['code_verifier'] = flow.code_verifier
     return redirect(auth_url)
 
-# VISTA QUE REECIBE EL CALLBACK Y GUARDA EL TOKEN
+# VISTA QUE REECIBE EL CALLBACK, GUARDA EL TOKEN Y ALMACENA LOS DATOS DE CLASSROOM
 def generar_callback(request):
     code = request.GET.get("code")
     error = request.GET.get("error")
@@ -50,16 +52,31 @@ def generar_callback(request):
         token_path = settings.BASE_DIR / "credentials" / "token.json"
         with open(token_path, "w") as token:
             token.write(creds.to_json())
+    # EN CASO DE PODER CONECTAR CON CLASSROOM INTENTAR 3 VECES O ENVIAR A UNA PANTALLA DE ERROR
+    intentos = 3
+    for i in range(intentos):
+        try:
+            sync_classroom_data()
+            break  # si funciona, salimos del bucle
+        except HttpError as e:
+            if e.resp.status == 503:
+                if i < intentos - 1:
+                    # Esperar 5 segundos y volver a intentar
+                    time.sleep(5)
+                    continue
+                else:
+                    mensaje = []
+                    return redirect(" url 'reporte/error' ")
+    
     return render(request, "continuar.html")
 
+# Panatalla de error para el caso 'error 503' (no conexion con classroom)
+def error_503(request):
+    return render(request, "error_503.html")
+
 #### VISTA DE 'generar_reporte.html'
-def generar_reporte(request):
-    # Sincroniza datos primero
-    sync_classroom_data()
-    
-    
-    
-    # Trae todos los alumnos con sus relaciones
+def generar_reporte(request):  
+    # Consulta que trae todos los alumnos con sus relaciones
     alumnos = Alumno.objects.prefetch_related(
         "alumnomateria_set__materia",
         "alumnomateria_set__materia__actividad_set"
@@ -69,7 +86,6 @@ def generar_reporte(request):
     for alumno in alumnos:
         materias_info = []
         for relacion in alumno.alumnomateria_set.all():
-            # Filtrar actividades por alumno y materia
             actividades = Actividad.objects.filter(
                 alumno=alumno,
                 materia=relacion.materia
@@ -78,8 +94,6 @@ def generar_reporte(request):
             total = actividades.count()
             entregadas = actividades.filter(actividad_entregada=True).count()
             porcentaje = (entregadas / total * 100) if total > 0 else 0
-
-            # Calcular promedio de calificaciones
             promedio = actividades.aggregate(promedio=Avg("calificacion"))["promedio"] or 0
 
             materias_info.append({
@@ -96,18 +110,15 @@ def generar_reporte(request):
             "alumno": alumno.nombre_completo,
             "materias": materias_info
         })
-    return render(request,"generar_reporte.html",
-                  {"alumnos_realcion": alumnos,
-                   "datos": datos})
-    
-### barra de busqueda abre otro html
-def alumno_buscado(request):
-    # Capturar parámetro de búsqueda
-    buscar = request.GET.get("buscar", "")
 
-    # Si no hay búsqueda, redirigir o mostrar mensaje
-    if not buscar:
-        return render(request, "busqueda.html", {"datos": [], "buscar": ""})
+    return render(request, "generar_reporte.html", {
+        "alumnos_realcion": alumnos,
+        "datos": datos
+    })
+    
+def alumno_buscado(request):
+    # Capturar la búsqueda
+    buscar = request.GET["buscar"]
 
     # Filtrar alumnos por nombre
     alumnos = Alumno.objects.filter(nombre_completo__icontains=buscar).prefetch_related(
@@ -139,13 +150,65 @@ def alumno_buscado(request):
 
         datos.append({
             "alumno": alumno.nombre_completo,
-            "materias": materias_info
+            "materias": materias_info,
         })
 
-    # Renderizar otro HTML (ej: busqueda.html) con los resultados
+    # Renderizar otro HTML con los resultados
     return render(request, "buscar_alumno.html", {
         "datos": datos,
-        "buscar": buscar
+        "buscar": buscar,
     })
 
+## HTML del reporte general #   
+def reporte_general(request):
+    # Traer todas las materias con sus relaciones
+    materias = Materia.objects.prefetch_related(
+        "alumnomateria_set__alumno",
+        "actividad_set"
+    )
+
+    datos = []
+    materias_unicas = set()
+
+    for materia in materias:
+        alumnos_info = []
+        for relacion in materia.alumnomateria_set.all():
+            alumno = relacion.alumno
+
+            # Filtrar actividades por alumno y materia
+            actividades = Actividad.objects.filter(
+                alumno=alumno,
+                materia=materia
+            )
+
+            # Calcular promedio
+            promedio = actividades.aggregate(promedio=Avg("calificacion"))["promedio"] or 0
+
+            alumnos_info.append({
+            "alumno": alumno.nombre_completo,
+            "calificaciones": list(actividades.values_list("calificacion", flat=True)),
+            "nombres_actividades": list(actividades.values_list("nombre_materias_no_entregadas", flat=True)),
+            "promedio": round(promedio, 2),
+            })
+
+        datos.append({
+            "materia": materia.nombre,
+            "alumnos": alumnos_info
+        })
+
+        # Agregar materia al conjunto de únicas
+        materias_unicas.add(materia.nombre)
+
+    # Convertir a lista ordenada
+    materias_unicas = sorted(list(materias_unicas))
+
+    # Renderizar template con contexto completo
+    return render(request, "reporte_general.html", {
+        "datos": datos,
+        "materias_unicas": materias_unicas
+    })
     
+    
+  
+
+

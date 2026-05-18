@@ -1,21 +1,20 @@
+{% load static %}
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de reporte</title>
+    <title>Sistema de reportes</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap');
-*{
+
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    text-decoration: none;
-    list-style: none;
 }
 
-body{
+body {
     font-family: 'Montserrat', sans-serif;
     background-color: #D9D9D9;
     min-height: 100vh;
@@ -23,15 +22,12 @@ body{
     flex-direction: column;
 }
 
-img{
-    max-width: 100%;
-}
-
 .container {
     max-width: 1200px;
-    margin: 0 auto;
+    margin: 20px auto;
 }
 
+/* Header */
 .header {
     display: flex;
     align-items: center;
@@ -53,90 +49,21 @@ img{
 
 .header-content h1 {
     color: #FFFFFF;
-    font-family: 'Montserrat', sans-serif;
-    font-size: 40px;
+    font-size: 32px;
     font-weight: 700;
     flex: 1;
     text-align: center;
-    margin-right: 90px;
 }
 
+/* Separador amarillo */
 .separador-amarrillo {
     width: 100%;
     height: 39px;
     background-color: #F9D007;
 }
 
-.buscador {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 700px;
-    margin: 30px auto 20px auto;
-}
-
-.buscador input {
-    width: 100%;
-    padding: 10px;
-    height: 40px;
-    border: none;
-    border-radius: 5px 0 0 5px;
-    font-size: 16px;
-}
-
-.buscador input::placeholder {
-    color: #999999;
-}
-
-.buscador .boton-buscar {
-    width: 50px;
-    height: 40px;
-    border: none;
-    background-color: #FFFFFF;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 0 5px 5px 0;
-}
-
-.buscador .boton-buscar img {
-    width: 20px;
-    height: 20px;
-}
-
-.filtro{
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    margin: 25px 0;
-}
-
-.filtro label{
-    font-size: 15px;
-    font-weight: 600;
-    padding: 0 30px;
-}
-
-.filtro select{
-    width: 230px;
-    height: 42px;
-    border: none;
-    border-radius: 5px;
-    padding: 0 15px;
-    background-color: #FFFFFF;
-    font-size: 14px;
-    color: #555555;
-    outline: none;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.12);
-    transition: 0.3s;
-}
-
-.filtro select:focus{
-    box-shadow: 0 0 0 3px rgba(0, 75, 185, 0.25);
-}
-
-.tabla-general .card {
+/* Tarjeta de tabla individual */
+.tabla-individual .card-individual {
     margin: 20px auto;
     width: 95%;
     padding: 20px;
@@ -145,14 +72,14 @@ img{
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
-.tabla-general table{
+.tabla-individual table {
     width: 100%;
     border-collapse: collapse;
     text-align: center;
     font-size: 13px;
 }
 
-.tabla-general thead tr:first-child th{
+.tabla-individual thead th {
     background-color: #004BB9;
     color: #FFFFFF;
     padding: 14px 8px;
@@ -161,43 +88,48 @@ img{
     border: 1px solid #dcdcdc;
 }
 
-.tabla-general thead tr:nth-child(2) th{
-    background-color: #EAF1FF;
-    color: #333333;
-    padding: 10px 6px;
-    font-size: 12px;
-    font-weight: 600;
-    border: 1px solid #dcdcdc;
-}
-
-.tabla-general tbody td{
+.tabla-individual tbody td {
     padding: 12px 8px;
     border: 1px solid #e0e0e0;
     color: #444444;
-    font-size: 13px;
+    font-size: 12px;
 }
 
-.tabla-general tbody tr:hover{
+.tabla-individual tbody tr:hover {
     background-color: #f5f9ff;
     transition: 0.2s;
 }
 
-.tabla-general tbody td:first-child{
+/* Actividades */
+.actividades {
+    margin-top: 18px;
+}
+
+.actividades h3 {
+    margin-bottom: 10px;
+    color: #333333;
+    font-size: 14px;
     font-weight: 600;
-    color: #004BB9;
 }
 
-.tabla-general thead tr:first-child th:first-child{
-    border-top-left-radius: 5px;
+.tabla-actividades {
+    width: 50%;
+    border-collapse: collapse;
+    background-color: #FFFFFF;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
-.tabla-general thead tr:first-child th:last-child{
-    border-top-right-radius: 5px;
+.tabla-actividades td {
+    padding: 8px;
+    font-size: 12px;
+    border: 1px solid #e0e0e0;
 }
 
+/* Botón */
 .btn-contenedor {
     display: flex;
-    justify-content: right;
+    justify-content: flex-end;
     margin: 30px 0;
     padding: 0 30px;
 }
@@ -218,6 +150,7 @@ img{
     background-color: #2E6B1F;
 }
 
+/* Footer */
 .seccion-verde {
     background-color: #43992D;
     color: #FFFFFF;
@@ -225,179 +158,84 @@ img{
     padding: 20px 0;
     margin-top: auto;
 }
-
-/*index.html*/
-
-.tabla-individual .card-individual{
-    margin: 20px auto;
-    width: 95%;
-    padding: 20px;
-    background-color: #FFFFFF;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-}
-
-.tabla-individual table{
-    width: 100%;
-    border-collapse: collapse;
-    text-align: center;
-    font-size: 13px;
-}
-
-.tabla-individual thead th{
-    background-color: #004BB9;
-    color: #FFFFFF;
-    padding: 14px 8px;
-    font-size: 14px;
-    font-weight: 600;
-    border: 1px solid #dcdcdc;
-}
-
-.tabla-individual tbody td{
-    padding: 12px 8px;
-    border: 1px solid #e0e0e0;
-    color: #444444;
-    font-size: 12px;
-}
-
-.tabla-individual tbody tr:hover{
-    background-color: #f5f9ff;
-    transition: 0.2s;
-}
-
-.actividades{
-    margin-top: 18px;
-    justify-content: left;
-}
-
-.actividades h3{
-    margin-bottom: 10px;
-    color: #333333;
-    font-size: 14px;
-    font-weight: 600;
-}
-
-.tabla-actividades{
-    width: 35%;
-}
-
-.tabla-actividades td{
-    padding: 8px;
-    font-size: 12px;
-}
-    </style>    
+    </style>
 </head>
-
 <body>
 
+    <!-- Header -->
     <header class="header">
         <div class="header-content">
-            <img src="613077409_18090833528511088_7801312701013768873_n.jpg" alt="Logo">
-            <h1>Sistema de reporte</h1>
+            <img src="{% static 'img/logo.png' %}" alt="Logo">
+            <h1>Sistema de reportes</h1>
         </div>
     </header>
 
-    <div class="separador-amarrillo"></div>
-
-    <div class="buscador">
-        <input type="text" placeholder="Buscar alumno">
-        <button class="boton-buscar">
-            <img src="../static/img/logo.jpg" alt="">
-        </button>
-    </div>
-
-    <div class="filtro">
+    <!-- Selector de materia -->
+    <div style="padding:20px;">
         <label for="materia">Materia:</label>
-        <select id="materia">
-            <option value="">Seleccionar materia</option>
+        <select id="materia" name="materia" style="padding:6px; border-radius:4px; border:1px solid #ccc;">
+            <option value="">Seleccione una materia</option>
+            {% for materia in materias_unicas %}
+                <option value="{{ materia }}">{{ materia }}</option>
+            {% endfor %}
         </select>
     </div>
 
-    <div class="tabla-general">
-        <div class="card">
-            <table>
+    <a href="{% url 'reporte_alumno' %}" style="margin-left:20px;">VER POR ALUMNOS</a>
 
-                <thead>
-                    <tr>
-                        <th rowspan="2">Nombre alumno</th>
-                        <th colspan="3">Bloque 1</th>
-                        <th colspan="3">Bloque 2</th>
-                        <th colspan="3">Bloque 3</th>
-                        <th colspan="3">Bloque 4</th>
-                        <th rowspan="2">Promedio final</th>
-                    </tr>
-                    <tr>
-                        <th>Actividades entregadas</th>
-                        <th>Porcentaje</th>
-                        <th>Calificación</th>
+    <!-- Separador amarillo -->
+    <div class="separador-amarrillo"></div>
 
-                        <th>Actividades entregadas</th>
-                        <th>Porcentaje</th>
-                        <th>Calificación</th>
+    <!-- Contenedor principal -->
+    <div class="container">
+        {% for registro in datos %}
+            <!-- Nombre de la materia -->
+            <h2 style="margin:20px 0;">{{ registro.materia }}</h2>
 
-                        <th>Actividades entregadas</th>
-                        <th>Porcentaje</th>
-                        <th>Calificación</th>
+            <!-- Tabla principal -->
+            <div class="tabla-individual">
+                <div class="card-individual">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nombre del alumno</th>
+                                {% if registro.alumnos and registro.alumnos.0.nombres_actividades %}
+                                    {% for nombre in registro.alumnos.0.nombres_actividades %}
+                                        <th>{{ nombre }}</th>
+                                    {% endfor %}
+                                    <th>Promedio final</th>
+                                {% endif %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for alumno in registro.alumnos %}
+                                <tr>
+                                    <td>{{ alumno.alumno }}</td>
+                                    {% for cal in alumno.calificaciones %}
+                                        <td>{{ cal }}</td>
+                                    {% endfor %}
+                                    <td>{{ alumno.promedio }}</td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="10">No hay alumnos registrados en esta materia</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
-                        <th>Actividades entregadas</th>
-                        <th>Porcentaje</th>
-                        <th>Calificación</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    <tr>
-                        <td>Juan</td>
-                        <td>4/5</td>
-                        <td>90%</td>
-                        <td>9</td>
-
-                        <td>6/6</td>
-                        <td>100%</td>
-                        <td>10</td>
-
-                        <td>5/6</td>
-                        <td>85%</td>
-                        <td>8</td>
-
-                        <td>3/5</td>
-                        <td>60%</td>
-                        <td>7</td>
-
-                        <td>8.5</td>
-                    </tr>
-
-                    <tr>
-                        <td>María</td>
-                        <td>5/5</td>
-                        <td>100%</td>
-                        <td>10</td>
-
-                        <td>4/6</td>
-                        <td>66.67%</td>
-                        <td>7</td>
-
-                        <td>6/6</td>
-                        <td>100%</td>
-                        <td>10</td>
-
-                        <td>5/5</td>
-                        <td>100%</td>
-                        <td>10</td>
-
-                        <td>8.5</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+            <!-- Botón generar reporte -->
+            <div class="btn-contenedor">
+                <button class="btn-generar">Generar reporte</button>
+            </div>
+        {% endfor %}
     </div>
 
-    <div class="btn-contenedor">
-        <button class="btn-generar">Generar reporte</button>
-    </div>
-
-    <footer class="seccion-verde"></footer>
+    <!-- Footer -->
+    <footer class="seccion-verde">
+    </footer>
 
 </body>
-
 </html>

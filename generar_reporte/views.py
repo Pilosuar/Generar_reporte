@@ -9,7 +9,9 @@ import time
 
 from generar_reporte.models import Alumno, Actividad, Materia
 from .google_classroom import sync_classroom_data
+#http://127.0.0.1:8000/reporte/login
 #http://127.0.0.1:8000/reporte/generar
+#http://127.0.0.1:8000/reporte/iniciar
 SCOPES = [
     "https://www.googleapis.com/auth/classroom.courses.readonly",
     "https://www.googleapis.com/auth/classroom.rosters.readonly",
@@ -74,8 +76,11 @@ def generar_callback(request):
 def error_503(request):
     return render(request, "error_503.html")
 
+#def error_404(reuqest):
+    #return render(reuqest, "error_404.html")
+
 #### VISTA DE 'generar_reporte.html'
-def generar_reporte(request):  
+def reporte_alumno(request):  
     # Consulta que trae todos los alumnos con sus relaciones
     alumnos = Alumno.objects.prefetch_related(
         "alumnomateria_set__materia",
@@ -111,7 +116,7 @@ def generar_reporte(request):
             "materias": materias_info
         })
 
-    return render(request, "generar_reporte.html", {
+    return render(request, "reportes_alumnos.html", {
         "alumnos_realcion": alumnos,
         "datos": datos
     })
@@ -160,7 +165,7 @@ def alumno_buscado(request):
     })
 
 ## HTML del reporte general #   
-def reporte_general(request):
+def reporte_materia(request):
     # Traer todas las materias con sus relaciones
     materias = Materia.objects.prefetch_related(
         "alumnomateria_set__alumno",
@@ -203,12 +208,11 @@ def reporte_general(request):
     materias_unicas = sorted(list(materias_unicas))
 
     # Renderizar template con contexto completo
-    return render(request, "reporte_general.html", {
+    return render(request, "reportes_materias.html", {
         "datos": datos,
         "materias_unicas": materias_unicas
     })
-    
-    
+      
 def materia_buscada(request):
     materia_nombre = request.GET.get("materia")
     datos = []

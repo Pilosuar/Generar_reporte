@@ -161,11 +161,6 @@ body {
     </style>
 </head>
 <body>
-    {% if mensaje_error %}
-    <p>Ops... Ocurrio un error, estamos tratando de solucionarlo</p>
-    <p style="color:red;">{{ mensaje_error }}</p>
-    {% else %}
-
     <header class="header">
         <div class="header-content">
             <img src="logo.png" alt="Logo">
@@ -187,7 +182,7 @@ body {
                 </form>
             </div>
             <div>
-                <a href="{% url 'reporte_general' %}">VER POR MATERIAS</a>
+                <a href="{% url 'reporte_materia' %}">VER POR MATERIAS</a>
             </div>
 
 
@@ -263,7 +258,5 @@ body {
 
     <footer class="seccion-verde">
     </footer>
-
-    {% endif %}
 </body>
 </html>

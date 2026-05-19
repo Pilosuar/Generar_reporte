@@ -1,63 +1,81 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <title>Sistema de reportes</title>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
+
 <body>
 
-    <h1>Resultados para "{{ buscar }}"</h1>
-    <div>
-        <form action="{% url 'reporte_materia' %}" method="get">
-            <input type="submit" value="Regresar">
-        </form>
-    </div>
-    {% if datos %}
+    <header class="header">
+        <div class="header-content">
+            <img src="{% static 'img/logo.jpg' %}" alt="Logo">
+            <h1>Sistema de reportes</h1>
+        </div>
+    </header>
+
+    <div class="separador-amarrillo"></div>
+
+    <div class="container">
+        <h2>Resultados para "{{ buscar }}"</h2>
+        <div>
+            <form action="{% url 'reporte_materia' %}" method="get">
+                <input class="btn-regresar" type="submit" value="Regresar">
+            </form>
+        </div>
+        {% if datos %}
         {% for registro in datos %}
-            <h2 style="margin:20px 0;">{{ registro.materia }}</h2>
+        <h2 style="margin:20px 0;">{{ registro.materia }}</h2>
 
-            <div class="tabla-individual">
-                <div class="card-individual">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Nombre del alumno</th>
-                                {% if registro.alumnos and registro.alumnos.0.nombres_actividades %}
-                                    {% for nombre in registro.alumnos.0.nombres_actividades %}
-                                        <th>{{ nombre }}</th>
-                                    {% endfor %}
-                                    <th>Promedio final</th>
-                                {% endif %}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for alumno in registro.alumnos %}
-                                <tr>
-                                    <td>{{ alumno.alumno }}</td>
-                                    {% for cal in alumno.calificaciones %}
-                                        <td>{{ cal }}</td>
-                                    {% endfor %}
-                                    <td>{{ alumno.promedio }}</td>
-                                </tr>
-                            {% empty %}
-                                <tr>
-                                    <td colspan="10">No hay alumnos registrados en esta materia</td>
-                                </tr>
+        <div class="tabla-individual">
+            <div class="card-individual">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nombre del alumno</th>
+                            {% if registro.alumnos and registro.alumnos.0.nombres_actividades %}
+                            {% for nombre in registro.alumnos.0.nombres_actividades %}
+                            <th>{{ nombre }}</th>
                             {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
+                            <th>Promedio final</th>
+                            {% endif %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for alumno in registro.alumnos %}
+                        <tr>
+                            <td>{{ alumno.alumno }}</td>
+                            {% for cal in alumno.calificaciones %}
+                            <td>{{ cal }}</td>
+                            {% endfor %}
+                            <td>{{ alumno.promedio }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="10">No hay alumnos registrados en esta materia</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
+        </div>
 
-            <div class="btn-contenedor">
-                <button class="btn-generar">Generar reporte</button>
-            </div>
+        <div class="btn-contenedor">
+            <button class="btn-generar">Generar reporte</button>
+        </div>
         {% endfor %}
-    {% else %}
+        {% else %}
         <p>No se encontraron coincidencias.</p>
-    {% endif %}
+        {% endif %}
+    </div>
+
+    <footer class="seccion-verde"></footer>
+
+
 
 </body>
+
 </html>

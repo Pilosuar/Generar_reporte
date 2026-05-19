@@ -1,73 +1,109 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
-    <title>Sistema de reportes</title>
+    <title>Alumno buscado</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
+
 <body>
-    <h1>Resultados para "{{ buscar }}"</h1>
-    <div>
-        <form action="{% url 'reporte_alumno' %}" method="get">
-            <input type="submit" value="Regresar">
-        </form>
-    </div>
-    {% if datos %}
+
+    <header class="header">
+        <div class="header-content">
+            <img src="{% static 'img/logo.jpg' %}" alt="Logo">
+            <h1>Sistema de reportes</h1>
+        </div>
+    </header>
+
+    <div class="separador-amarrillo"></div>
+
+    <div class="container">
+
+        <h2>Resultados para "{{ buscar }}"</h2>
+
+        <div class="">
+            <form action="{% url 'reporte_alumno' %}" method="get">
+                <input class="btn-regresar" type="submit" value="Regresar">
+            </form>
+        </div>
+
+        {% if datos %}
         {% for registro in datos %}
-            <h2>{{ registro.alumno }}</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Materia</th>
-                        <th>Promedio</th>
-                        <th>Tareas entregadas</th>
-                        <th>Porcentaje</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for materia in registro.materias %}
+
+        <h2 class="titulo-alumno">{{ registro.alumno }}</h2>
+
+        <div class="tabla-individual">
+            <div class="card-individual">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Materia</th>
+                            <th>Promedio</th>
+                            <th>Tareas entregadas</th>
+                            <th>Porcentaje</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for materia in registro.materias %}
                         <tr>
                             <td>{{ materia.materia }}</td>
                             <td>{{ materia.promedio }}</td>
                             <td>{{ materia.entregadas }}/{{ materia.total }}</td>
                             <td>{{ materia.porcentaje }}%</td>
                         </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="actividades">
+
+            {% if registro.materias %}
+            <h3>Actividades no entregadas</h3>
+
+            <table class="tabla-actividades">
+                <thead>
+                    <tr>
+                        <th>Nombre de actividad</th>
+                        <th>Materia</th>
+                        <th>Calificación</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for materia in registro.materias %}
+                    {% for act in materia.actividades_no_entregadas %}
+                    <tr>
+                        <td>{{ act.nombre_materias_no_entregadas }}</td>
+                        <td>{{ materia.materia }}</td>
+                        <td>{{ act.calificacion }}</td>
+                    </tr>
+                    {% endfor %}
                     {% endfor %}
                 </tbody>
             </table>
 
-            <div class="actividades">
-                {% if registro.materias %}
-                <h3>Actividades no entregadas</h3>
-                <table class="tabla-actividades">
-                    <thead>
-                        <tr>
-                            <th>Nombre de actividad</th>
-                            <th>Materia</th>
-                            <th>Calificación</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for materia in registro.materias %}
-                            {% for act in materia.actividades_no_entregadas %}
-                                <tr>
-                                    <td>{{ act.nombre_materias_no_entregadas }}</td>
-                                    <td>{{ materia.materia }}</td>
-                                    <td>{{ act.calificacion }}</td>
-                                </tr>
-                            {% endfor %}
-                        {% endfor %}
-                    </tbody>
-                </table>
-                {% else %}
-                <p>TAODAS LAS ACTIVIDADES FUERON ENTREGADAS</p>
-                {% endif %}
-            </div>
-            <div class="btn-contenedor">
-                <button class="btn-generar">Generar reporte</button>
-            </div>
+            {% else %}
+            <p>TOOOOODAS LAS ACTIVIDADES FUERON ENTREGADAS</p>
+            {% endif %}
+
+        </div>
+
+        <div class="btn-contenedor">
+            <button class="btn-generar">Generar reporte</button>
+        </div>
+
         {% endfor %}
-    {% else %}
+        {% else %}
         <p>No se encontraron coincidencias.</p>
-    {% endif %}
+        {% endif %}
+
+    </div>
+
+    <footer class="seccion-verde"></footer>
+
 </body>
+
 </html>

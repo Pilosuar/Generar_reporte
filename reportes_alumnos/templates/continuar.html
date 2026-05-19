@@ -1,19 +1,26 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Continuar</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
 </head>
+
 <body>
-    {% if mensaje %}
-    <h1>Ops... Ha ocurrido un error</h1>
-    <h2>Intenta iniciar sesión de nuevo</h2>
-    <a href="{% url 'inicio' %}">Continuar</a>
-    {% else %}
-    <h1>Sesion iniciada</h1>
-    <h2>puedes continuar</h2>
-    <a href="{% url 'reporte_alumno' %}">Continuar</a>
-    {% endif %}
+    <div class="card">
+        {% if mensaje %}
+        <h1>Ops... Ha ocurrido un error</h1>
+        <h2>Intenta iniciar sesión de nuevo</h2>
+        <a href="{% url 'inicio' %}">Continuar</a>
+        {% else %}
+        <h1>Sesion iniciada</h1>
+        <h2>puedes continuar</h2>
+        <a href="{% url 'reporte_alumno' %}">Continuar</a>
+        {% endif %}
+    </div>
 </body>
+
 </html>

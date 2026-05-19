@@ -1,13 +1,16 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
     <title>Inicio</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+</head>
+    <div class="card">
+        <h1>Bienvenido al sistema de reportes</h1>
+        <p>Actualizar datos</p>
+        <a href="{% url 'login_google' %}">Iniciar sesión con Google</a>
+        <p>Ver sin actualizar datos</p>
+        <a href="{% url 'reporte_alumno' %}">Acceder offline</a>
+    </div>
 </head>
 <body>
-    <h1>Bienvenido al sistema de reportes</h1>
-    <p>Actualizar datos</p>
-    <a href="{% url 'login_google' %}">Iniciar sesión con Google</a>
-    <p>Ver sin actualizar datos</p>
-    <a href="{% url 'reporte_alumno' %}">Acceder ofline</a>
-</body>
-</html>

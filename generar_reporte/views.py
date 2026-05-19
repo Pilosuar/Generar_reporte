@@ -1,3 +1,4 @@
+import openpyxl
 from django.shortcuts import redirect, render
 from django.http import HttpResponse
 from google_auth_oauthlib.flow import Flow
@@ -6,8 +7,10 @@ import os
 from django.db.models import Count, Avg, F
 from googleapiclient.errors import HttpError
 import time
+#Generar reportes
 
-from generar_reporte.models import Alumno, Actividad, Materia
+
+from generar_reporte.models import Alumno, Actividad, Materia, AlumnoMateria
 from .google_classroom import sync_classroom_data
 #http://127.0.0.1:8000/reporte/login
 #http://127.0.0.1:8000/reporte/generar
@@ -112,6 +115,7 @@ def reporte_alumno(request):
             })
 
         datos.append({
+            "id": alumno.id,
             "alumno": alumno.nombre_completo,
             "materias": materias_info
         })
@@ -154,6 +158,7 @@ def alumno_buscado(request):
             })
 
         datos.append({
+            "id": alumno.id,
             "alumno": alumno.nombre_completo,
             "materias": materias_info,
         })
@@ -253,3 +258,40 @@ def materia_buscada(request):
         "datos": datos
     })
 
+def generar_reporte_alumno(request, alumno_id):
+    alumno = Alumno.objects.get(id=alumno_id)
+    relaciones = AlumnoMateria.objects.filter(alumno=alumno).select_related("materia")
+
+    # Crear workbook
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Reporte"
+
+    # Encabezados
+    ws.append(["Alumno", "Materia", "Promedio", "Entregadas", "Total", "Porcentaje de entrega"])
+
+    for relacion in relaciones:
+        materia = relacion.materia
+        actividades = Actividad.objects.filter(alumno=alumno, materia=materia)
+
+        total = actividades.count()
+        entregadas = actividades.filter(actividad_entregada=True).count()
+        porcentaje = (entregadas / total * 100) if total > 0 else 0
+        promedio = actividades.aggregate(promedio=Avg("calificacion"))["promedio"] or 0
+
+        ws.append([
+            alumno.nombre_completo,
+            materia.nombre,
+            round(promedio, 2),
+            entregadas,
+            total,
+            round(porcentaje, 2)
+        ])
+
+    # Respuesta HTTP con archivo XLSX
+    response = HttpResponse(
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+    response["Content-Disposition"] = f'attachment; filename="reporte_{alumno.nombre_completo}.xlsx"'
+    wb.save(response)
+    return response

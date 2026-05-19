@@ -247,13 +247,13 @@ body {
                 <p>TAODAS LAS ACTIVIDADES FUERON ENTREGADAS</p>
                 {% endif %}
             </div>
-        <div class="btn-contenedor">
-            <button class="btn-generar">Generar reporte</button>
-        </div>
+        <form action="{% url 'generar_reporte_alumno' registro.id %}" method="post">
+        {% csrf_token %}
+            <div class="btn-contenedor">
+                <button type="submit" class="btn-generar">Generar reporte</button>
+            </div>
+        </form>
         {% endfor %}
-
-        <!-- Botón generar reporte -->
-        
     </div>
 
     <footer class="seccion-verde">

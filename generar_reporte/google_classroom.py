@@ -4,12 +4,13 @@ from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import Flow
 from django.conf import settings
-from generar_reporte.models import Alumno, AlumnoMateria, Actividad, Materia
+from generar_reporte.models import Alumno, AlumnoMateria, Actividad, Materia, Profesor, MateriaProfesor
 
 SCOPES = [
     "https://www.googleapis.com/auth/classroom.courses.readonly",
     "https://www.googleapis.com/auth/classroom.rosters.readonly",
-    "https://www.googleapis.com/auth/classroom.student-submissions.students.readonly"
+    "https://www.googleapis.com/auth/classroom.student-submissions.students.readonly",
+    "https://www.googleapis.com/auth/classroom.profile.emails",
 ]
 
 def get_service():
@@ -46,7 +47,29 @@ def sync_classroom_data():
             defaults={"nombre": course.get("name", "Sin nombre")}
         )
 
-        # Traer estudiantes de la clase
+        # 🔹 Traer profesor de la clase (requiere scope classroom.profile.emails)
+        teacher_list = service.courses().teachers().list(courseId=course["id"]).execute().get("teachers", [])
+        for teacher in teacher_list:
+            profile = teacher.get("profile", {})
+            nombre_profesor = profile.get("name", {}).get("fullName", "Sin nombre")
+            google_id_profesor = profile.get("id", None)
+            correo_profesor = profile.get("emailAddress", None)  # ahora sí disponible con el scope correcto
+
+            profesor_obj, _ = Profesor.objects.update_or_create(
+                google_id=google_id_profesor,
+                defaults={
+                    "nombre_completo": nombre_profesor,
+                    "correo": correo_profesor  # puede ser None si no viene
+                }
+            )
+
+            # Relación profesor-materia
+            MateriaProfesor.objects.update_or_create(
+                profesor=profesor_obj,
+                materia=materia_obj
+            )
+
+        # 🔹 Traer estudiantes de la clase
         students = service.courses().students().list(courseId=course["id"]).execute().get("students", [])
         for student in students:
             profile = student.get("profile", {})
@@ -59,15 +82,14 @@ def sync_classroom_data():
             )
 
             # Relación alumno-materia
-            relacion, _ = AlumnoMateria.objects.update_or_create(
+            AlumnoMateria.objects.update_or_create(
                 alumno=alumno_obj,
                 materia=materia_obj
             )
 
-            # Recorrer las tareas del curso
+            # 🔹 Recorrer las tareas del curso
             coursework = service.courses().courseWork().list(courseId=course["id"]).execute().get("courseWork", [])
             for work in coursework:
-                # Obtener entregas de cada tarea
                 submissions = service.courses().courseWork().studentSubmissions().list(
                     courseId=course["id"],
                     courseWorkId=work["id"]
@@ -78,10 +100,9 @@ def sync_classroom_data():
                 for sub in submissions:
                     if sub.get("userId") == google_id:
                         grade = sub.get("assignedGrade", 0)
-                        # Considerar entregada si está TURNED_IN o RETURNED
                         entregada = sub.get("state") in ["RETURNED"]
 
-                # Guardar/actualizar actividad en Actividad (ligada a alumno y materia)
+                # Guardar/actualizar actividad
                 Actividad.objects.update_or_create(
                     alumno=alumno_obj,
                     materia=materia_obj,

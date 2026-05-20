@@ -29,3 +29,21 @@ class Actividad(models.Model):
 
     class Meta:
         unique_together = ("alumno", "materia", "nombre_materias_no_entregadas")
+
+class Profesor(models.Model):
+    nombre_completo = models.CharField(max_length=200)
+    correo = models.EmailField(unique=True)  # opcional, para login o contacto
+    google_id = models.CharField(max_length=50, unique=True, default=0)  # si lo sincronizas con Classroom
+
+    def __str__(self):
+        return self.nombre_completo
+
+class MateriaProfesor(models.Model):
+    profesor = models.ForeignKey(Profesor, on_delete=models.CASCADE)
+    materia = models.ForeignKey(Materia, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ("profesor", "materia")  # evita duplicados
+
+    def __str__(self):
+        return f"{self.profesor} - {self.materia}"
